@@ -13,15 +13,12 @@ class ArangoClient(object):
         self.port = port
         self.basic_auth = (username, password)
         self.cert = cert
-        self._database = database
+        self.current_database = database
 
         self.session = requests.Session()
         self._authenticate()
 
         self.database = DatabaseEndpoint(self)
-
-    def set_database(self, new_database):
-        self._database = new_database
 
     @property
     def base_uri(self):
@@ -33,8 +30,8 @@ class ArangoClient(object):
 
     @property
     def db_uri(self):
-        if self._database:
-            return '{BASE}/_db/{DATABASE}'.format(BASE=self.base_uri, DATABASE=self._database)
+        if self.current_database:
+            return '{BASE}/_db/{DATABASE}'.format(BASE=self.base_uri, DATABASE=self.current_database)
         else:
             return '{BASE}/_db'.format(BASE=self.base_uri)
 

@@ -41,6 +41,8 @@ def raise_for_status(response):
     elif response.status_code == 505:
         raise HttpVersionError('The HTTP Version being used is not supported, you must use HTTP/1.0 or HTTP/1.1')
 
+    response.raise_for_status()
+
 
 def parse_response(response, ignore_errors=False):
     raise_for_status(response)
@@ -69,5 +71,19 @@ class Endpoint(object):
 
         return '{BASE}/{SUFFIX}'.format(BASE=base, SUFFIX=self.suffix)
 
+    def build_uri(self, *args):
+        if not len(args):
+            return self.endpoint_uri
+        return '{BASE}/{ARGS}'.format(BASE=self.endpoint_uri, ARGS='/'.join(args))
+
     def get(self, uri):
         return parse_response(self.client.session.get(uri))
+
+    def post(self, uri, payload=None):
+        if not payload:
+            payload = dict()
+
+        parse_response(self.client.session.post(uri, json=payload))
+
+    def delete(self, uri):
+        parse_response(self.client.session.delete(uri))
