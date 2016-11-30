@@ -1,5 +1,6 @@
 import re
 
+from pyRango.utils import dict_to_camel
 from pyRango.api.endpoints.meta import Endpoint, ArangoError
 
 
@@ -64,7 +65,9 @@ class CollectionEndpoint(Endpoint):
         if not self.is_valid(name):
             raise ArangoError('Collection Name Invalid: It must only contain letters, digits, _ or -')
 
-        payload = {'name': name}
+        payload = dict_to_camel(kwargs)
+        payload['name'] = name
+
         return self.post(self.build_uri(), payload=payload)
 
     def delete(self, name):
