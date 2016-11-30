@@ -3,6 +3,7 @@ import logging
 import requests
 
 from pyRango.api.endpoints import DatabaseEndpoint
+from pyRango.api.endpoints import CollectionEndpoint
 
 LOG = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ class ArangoClient(object):
         self._authenticate()
 
         self.database = DatabaseEndpoint(self)
+        self.collection = CollectionEndpoint(self)
 
     @property
     def base_uri(self):
