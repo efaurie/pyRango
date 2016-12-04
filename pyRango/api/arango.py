@@ -3,7 +3,11 @@ import logging
 import requests
 
 from pyRango.api.endpoints import EdgeEndpoint
+from pyRango.api.endpoints import CacheEndpoint
+from pyRango.api.endpoints import QueryEndpoint
 from pyRango.api.endpoints import GraphEndpoint
+from pyRango.api.endpoints import CursorEndpoint
+from pyRango.api.endpoints import ExplainEndpoint
 from pyRango.api.endpoints import DocumentEndpoint
 from pyRango.api.endpoints import DatabaseEndpoint
 from pyRango.api.endpoints import TraversalEndpoint
@@ -29,6 +33,10 @@ class ArangoClient(object):
         self.database = DatabaseEndpoint(self)
         self.collection = CollectionEndpoint(self)
         self.document = DocumentEndpoint(self)
+        self.query = QueryEndpoint(self)
+        self.cursor = CursorEndpoint(self)
+        self.explain = ExplainEndpoint(self)
+        self.cache = CacheEndpoint(self)
 
     @property
     def base_uri(self):
