@@ -97,11 +97,14 @@ class Endpoint(object):
             return self.endpoint_uri
         return '{BASE}/{ARGS}'.format(BASE=self.endpoint_uri, ARGS='/'.join(args))
 
-    def _format_payload(self, payload):
+    @classmethod
+    def _format_payload(cls, payload, transform):
         if not payload:
             return dict()
-        else:
+        elif transform:
             return dict_to_camel(payload)
+        else:
+            return payload
 
     def _get(self, uri, **kwargs):
         if kwargs:
@@ -109,13 +112,21 @@ class Endpoint(object):
             return parse_response(self.client.session.get(uri, params=parameters))
         return parse_response(self.client.session.get(uri))
 
-    def _post(self, uri, payload=None):
-        payload = self._format_payload(payload)
+    def _post(self, uri, payload=None, transform=True):
+        payload = self._format_payload(payload, transform)
         return parse_response(self.client.session.post(uri, json=payload))
 
-    def _put(self, uri, payload=None):
-        payload = self._format_payload(payload)
+    def _put(self, uri, payload=None, transform=True):
+        payload = self._format_payload(payload, transform)
         parse_response(self.client.session.put(uri, json=payload))
 
-    def _delete(self, uri):
-        return parse_response(self.client.session.delete(uri))
+    def _patch(self, uri, payload=None, transform=True):
+        payload = self._format_payload(payload, transform)
+        parse_response(self.client.session.patch(uri, json=payload))
+
+    def _delete(self, uri, payload=None, transform=True):
+        payload = self._format_payload(payload, transform)
+        return parse_response(self.client.session.delete(uri, json=payload))
+
+    def _head(self, uri):
+        return parse_response(self.client.session.head(uri))
