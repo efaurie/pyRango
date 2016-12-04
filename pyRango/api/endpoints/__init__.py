@@ -1,4 +1,5 @@
 from .edge import EdgeEndpoint
+from .cache import CacheEndpoint
 from .query import QueryEndpoint
 from .graph import GraphEndpoint
 from .cursor import CursorEndpoint

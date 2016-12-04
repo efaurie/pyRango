@@ -16,7 +16,7 @@ from pyRango.api.endpoints import CollectionEndpoint
 LOG = logging.getLogger(__name__)
 
 
-class ArangoClient(object):
+class ArangoHttpClient(object):
     def __init__(self, host='localhost', port=8529, database='_system', username=None, password=None, cert=None):
         self.host = host
         self.port = port
