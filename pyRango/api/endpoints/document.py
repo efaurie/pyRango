@@ -1,4 +1,4 @@
-from pyRango.api.endpoints.meta import Endpoint, ArangoError
+from pyRango.api.endpoints.meta import Endpoint
 
 
 class DocumentEndpoint(Endpoint):

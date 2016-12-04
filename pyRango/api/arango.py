@@ -2,7 +2,11 @@ import logging
 
 import requests
 
+from pyRango.api.endpoints import EdgeEndpoint
+from pyRango.api.endpoints import GraphEndpoint
+from pyRango.api.endpoints import DocumentEndpoint
 from pyRango.api.endpoints import DatabaseEndpoint
+from pyRango.api.endpoints import TraversalEndpoint
 from pyRango.api.endpoints import CollectionEndpoint
 
 LOG = logging.getLogger(__name__)
@@ -19,8 +23,12 @@ class ArangoClient(object):
         self.session = requests.Session()
         self._authenticate()
 
+        self.edge = EdgeEndpoint(self)
+        self.graph = GraphEndpoint(self)
+        self.traversal = TraversalEndpoint(self)
         self.database = DatabaseEndpoint(self)
         self.collection = CollectionEndpoint(self)
+        self.document = DocumentEndpoint(self)
 
     @property
     def base_uri(self):
