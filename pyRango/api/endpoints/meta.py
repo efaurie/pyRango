@@ -97,6 +97,12 @@ class Endpoint(object):
             return self.endpoint_uri
         return '{BASE}/{ARGS}'.format(BASE=self.endpoint_uri, ARGS='/'.join(args))
 
+    def _format_payload(self, payload):
+        if not payload:
+            return dict()
+        else:
+            return dict_to_camel(payload)
+
     def _get(self, uri, **kwargs):
         if kwargs:
             parameters = dict_to_camel(kwargs)
@@ -104,12 +110,12 @@ class Endpoint(object):
         return parse_response(self.client.session.get(uri))
 
     def _post(self, uri, payload=None):
-        if not payload:
-            payload = dict()
-        else:
-            payload = dict_to_camel(payload)
+        payload = self._format_payload(payload)
+        return parse_response(self.client.session.post(uri, json=payload))
 
-        parse_response(self.client.session.post(uri, json=payload))
+    def _put(self, uri, payload=None):
+        payload = self._format_payload(payload)
+        parse_response(self.client.session.put(uri, json=payload))
 
     def _delete(self, uri):
-        parse_response(self.client.session.delete(uri))
+        return parse_response(self.client.session.delete(uri))

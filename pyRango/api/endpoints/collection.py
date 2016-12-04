@@ -1,6 +1,9 @@
 import re
+import logging
 
 from pyRango.api.endpoints.meta import Endpoint, ArangoError
+
+LOG = logging.getLogger(__name__)
 
 
 class CollectionEndpoint(Endpoint):
@@ -114,6 +117,30 @@ class CollectionEndpoint(Endpoint):
 
         """
         return self._get(self.build_uri(name, 'checksum'), with_revisions=with_revisions, with_data=with_data)
+
+    def load(self, name):
+        return self._put(self.build_uri(name, 'load'))
+
+    def unload(self, name):
+        return self._put(self.build_uri(name, 'unload'))
+
+    def set_properties(self, name, wait_for_sync=None, journal_size=None):
+        if not wait_for_sync and not journal_size:
+            LOG.warning('[!] No-Op collection.set_properties call as neither arg was specified')
+            return dict()
+        payload = {}
+        if wait_for_sync:
+            payload['wait_for_sync'] = wait_for_sync
+        if journal_size:
+            payload['journal_size'] = journal_size
+
+        return self._put(self.build_uri(name, 'properties'), payload=payload)
+
+    def rename(self, old_name, new_name):
+        return self._put(self.build_uri(old_name, 'rename'), payload={'name': new_name})
+
+    def rotate(self, name):
+        return self._put(self.build_uri(name, 'rotate'))
 
     def delete(self, name):
         return self._delete(self.build_uri(name))
