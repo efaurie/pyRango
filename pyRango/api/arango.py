@@ -37,6 +37,10 @@ class ArangoClient(object):
         else:
             return '{BASE}/_db'.format(BASE=self.base_uri)
 
+    @property
+    def api_uri(self):
+        return '{BASE}/_api'.format(BASE=self.base_uri)
+
     def _authenticate(self):
         if self.cert:
             self.session.cert = self.cert

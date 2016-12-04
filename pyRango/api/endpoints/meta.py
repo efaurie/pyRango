@@ -1,5 +1,7 @@
 import abc
 
+from pyRango.utils import dict_to_camel
+
 
 class HttpVersionError(Exception):
     pass
@@ -44,6 +46,12 @@ def raise_for_status(response):
     response.raise_for_status()
 
 
+def filter_result(response_json):
+    for meta_element in ['code', 'error']:
+        response_json.pop(meta_element)
+    return response_json
+
+
 def parse_response(response, ignore_errors=False):
     raise_for_status(response)
     output = response.json()
@@ -51,23 +59,36 @@ def parse_response(response, ignore_errors=False):
     if output.get('error', False) and not ignore_errors:
         raise ArangoError('Request Failed!')
 
-    return output.get('result', dict())
+    if 'result' in output:
+        return output.get('result')
+    else:
+        return filter_result(output)
 
 
 class Endpoint(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, client, route='DB'):
+        """
+        Parameters
+        ----------
+        client : ArangoClient
+            The ArangoClient object
+        route : str (Optional)
+            Which route the request goes through choose 'DB' or 'Admin'
+        """
         self.client = client
-        self.route = route
+        self.route = route.upper()
         self.suffix = None
 
     @property
     def endpoint_uri(self):
         if self.route.upper() == 'DB':
             base = self.client.db_uri
-        else:
+        elif self.route.upper() == 'ADMIN':
             base = self.client.admin_uri
+        else:
+            raise ArangoError('[-] Unsupported Endpoint Router: {ROUTE}'.format(ROUTE=self.route))
 
         return '{BASE}/{SUFFIX}'.format(BASE=base, SUFFIX=self.suffix)
 
@@ -76,14 +97,19 @@ class Endpoint(object):
             return self.endpoint_uri
         return '{BASE}/{ARGS}'.format(BASE=self.endpoint_uri, ARGS='/'.join(args))
 
-    def get(self, uri):
+    def _get(self, uri, **kwargs):
+        if kwargs:
+            parameters = dict_to_camel(kwargs)
+            return parse_response(self.client.session.get(uri, params=parameters))
         return parse_response(self.client.session.get(uri))
 
-    def post(self, uri, payload=None):
+    def _post(self, uri, payload=None):
         if not payload:
             payload = dict()
+        else:
+            payload = dict_to_camel(payload)
 
         parse_response(self.client.session.post(uri, json=payload))
 
-    def delete(self, uri):
+    def _delete(self, uri):
         parse_response(self.client.session.delete(uri))

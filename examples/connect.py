@@ -6,12 +6,26 @@ HOSTNAME = 'localhost'
 PORT = 8529
 
 
+def print_summary(header, results, num_tabs=0):
+    print('\n{TABS}{HEADER}\n{TABS}{UNDERLINE}'.format(HEADER=header,
+                                                       UNDERLINE=''.join(['-' for _ in range(len(header))]),
+                                                       TABS=''.join(['\t' for _ in range(num_tabs)])))
+    if isinstance(results, dict):
+        for key, value in results.items():
+            print('{TABS}{KEY}: {VALUE}'.format(KEY=key, VALUE=value, TABS=''.join(['\t' for _ in range(num_tabs+1)])))
+    elif hasattr(results, '__iter__'):
+        if header.endswith('s'):
+            header = header[:-1]
+        for count, item in enumerate(results):
+            print_summary('{HEADER} {COUNT}:'.format(HEADER=header, COUNT=count+1), item, num_tabs=num_tabs+1)
+
+
 def main():
     client = ArangoClient(host=HOSTNAME, port=PORT, username=USERNAME, password=PASSWORD)
-    current_info = client.database.current()
-    print('\nCurrent Database\n----------------')
-    for key, value in current_info.items():
-        print('{KEY}: {VALUE}'.format(KEY=key, VALUE=value))
+    print_summary('Current Database', client.database.current())
+    print_summary('Collections', client.collection.list())
+    print_summary('Collection Info', client.collection.get('persons'))
+    print_summary('Collection Info (Multi)', client.collection.get('persons', 'properties'))
 
 if __name__ == '__main__':
     main()

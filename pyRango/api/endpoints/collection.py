@@ -1,6 +1,5 @@
 import re
 
-from pyRango.utils import dict_to_camel
 from pyRango.api.endpoints.meta import Endpoint, ArangoError
 
 
@@ -15,9 +14,6 @@ class CollectionEndpoint(Endpoint):
         if system_collection and not name.startswith('_'):
             is_valid = False
         return is_valid
-
-    def list(self):
-        return self.get(self.build_uri())
 
     def create(self, name, **kwargs):
         """
@@ -65,10 +61,59 @@ class CollectionEndpoint(Endpoint):
         if not self.is_valid(name):
             raise ArangoError('Collection Name Invalid: It must only contain letters, digits, _ or -')
 
-        payload = dict_to_camel(kwargs)
-        payload['name'] = name
+        kwargs['name'] = name
 
-        return self.post(self.build_uri(), payload=payload)
+        return self._post(self.build_uri(), payload=kwargs)
+
+    def list(self, exclude_system=False):
+        return self._get(self.build_uri(), exclude_system=exclude_system)
+
+    def get(self, name, *args, singleton_list=False):
+        """
+        Parameters
+        ----------
+        name : str
+            The name of a collection you wish to get information for.
+        args : list of str (optional)
+            Any subsequent collections you would also wish to get information for.
+        singleton_list : bool (optional)
+            Whether a result of length one should be returned as a singleton list or not.
+            This arg only applies to specifically listed collections
+        """
+        results = [self._get(self.build_uri(name))]
+        for collection_name in args:
+            results.append(self._get(self.build_uri(collection_name)))
+
+        if not singleton_list and len(results) == 1:
+            return results[0]
+        else:
+            return results
+
+    def get_properties(self, name):
+        return self._get(self.build_uri(name, 'properties'))
+
+    def get_document_count(self, name):
+        return self._get(self.build_uri(name, 'count'))
+
+    def get_statistics(self, name):
+        return self._get(self.build_uri(name, 'figures'))
+
+    def get_revision(self, name):
+        return self._get(self.build_uri(name, 'revision'))
+
+    def get_checksum(self, name, with_revisions=False, with_data=False):
+        """
+        Parameters
+        ----------
+        name : str
+            The name of the collection to get the checksum of
+        with_revisions : bool (optional)
+            Whether or not to include document IDs in the Checksum calculation.
+        with_data : bool (optional)
+            Whether or not to include document body data in the checksum calculation.
+
+        """
+        return self._get(self.build_uri(name, 'checksum'), with_revisions=with_revisions, with_data=with_data)
 
     def delete(self, name):
-        return self.delete(self.build_uri(name))
+        return self._delete(self.build_uri(name))

@@ -1,6 +1,6 @@
 def snake_to_camel(snake_case):
     split = snake_case.split('_')
-    return ''.join([split[0]] + [x.title for x in split[1:]])
+    return ''.join([split[0]] + [x.title() for x in split[1:]])
 
 
 def dict_to_camel(input_dict):
