@@ -1,4 +1,5 @@
 from pyRango.api import ArangoHttpClient
+from pyRango.models import Collection
 
 
 class ArangoClient(object):
@@ -20,3 +21,9 @@ class ArangoClient(object):
     def change_database(self, new_database):
         self.api_parameters['database'] = new_database
         self.http_client = ArangoHttpClient(**self.api_parameters)
+
+    def create_collection(self, name):
+        return Collection(self.http_client, self.database, name, new=True)
+
+    def get_collection(self, name):
+        return Collection(self.http_client, self.database, name)

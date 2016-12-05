@@ -1,4 +1,4 @@
-from pyRango import ArangoClient
+from pyRango.api import ArangoHttpClient
 
 USERNAME = 'root'
 PASSWORD = 'SECRET'
@@ -13,6 +13,8 @@ def print_summary(header, results, num_tabs=0):
     if isinstance(results, dict):
         for key, value in results.items():
             print('{TABS}{KEY}: {VALUE}'.format(KEY=key, VALUE=value, TABS=''.join(['\t' for _ in range(num_tabs+1)])))
+    elif isinstance(results, str):
+        print('{TABS}{VALUE}'.format(TABS=''.join(['\t' for _ in range(num_tabs+1)]), VALUE=results))
     elif hasattr(results, '__iter__'):
         if header.endswith('s'):
             header = header[:-1]
@@ -21,9 +23,10 @@ def print_summary(header, results, num_tabs=0):
 
 
 def main():
-    client = ArangoClient(host=HOSTNAME, port=PORT, username=USERNAME, password=PASSWORD)
+    client = ArangoHttpClient(host=HOSTNAME, port=PORT, username=USERNAME, password=PASSWORD)
     print_summary('Current Database', client.database.current())
-    print_summary('Collections', client.collection.list())
+    print_summary('Databases', client.database.list())
+    print_summary('Collections', client.collection.list(exclude_system=True))
     print_summary('Collection Info', client.collection.get('persons'))
     print_summary('Collection Info (Multi)', client.collection.get('persons', 'properties'))
 

@@ -1,6 +1,6 @@
 import abc
 
-from pyRango.utils import dict_to_camel
+from pyRango.utils import dict_to_camel, dict_to_snake
 
 
 class HttpVersionError(Exception):
@@ -48,7 +48,8 @@ def raise_for_status(response):
 
 def filter_result(response_json):
     for meta_element in ['code', 'error']:
-        response_json.pop(meta_element)
+        if meta_element in response_json:
+            response_json.pop(meta_element)
     return response_json
 
 
@@ -60,9 +61,9 @@ def parse_response(response, ignore_errors=False):
         raise ArangoError('Request Failed!')
 
     if 'result' in output:
-        return output.get('result')
+        return dict_to_snake(output.get('result'))
     else:
-        return filter_result(output)
+        return dict_to_snake(filter_result(output))
 
 
 class Endpoint(object):

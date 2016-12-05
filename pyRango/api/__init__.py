@@ -1,1 +1,1 @@
-from .arango import ArangoClient
+from .arango_http import ArangoHttpClient
