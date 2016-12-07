@@ -29,5 +29,8 @@ class ArangoClient(object):
     def get_collection(self, name):
         return Collection(self.http_client, self.database, name)
 
+    def create_graph(self, name):
+        return Graph(self.http_client, self.database, name, new=True)
+
     def get_graph(self, name):
         return Graph(self.http_client, self.database, name)

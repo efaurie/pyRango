@@ -115,6 +115,12 @@ class Graph(Writable):
             self.vertex_collections[vertex_collection] = VertexCollection(self.http_client, self.database, self.name,
                                                                           vertex_collection)
 
+    def create_edge_collection(self, collection_name):
+        return EdgeCollection(self.http_client, self.database, self.name, collection_name, new=True)
+
+    def create_vertex_collection(self, collection_name):
+        return VertexCollection(self.http_client, self.database, self.name, collection_name, new=True)
+
     def create_edge(self, edge_collection, source, destination, data):
         return self.edge_collections[edge_collection].create_edge(source, destination, data)
 
