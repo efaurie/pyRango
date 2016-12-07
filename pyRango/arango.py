@@ -1,5 +1,6 @@
 from pyRango.api import ArangoHttpClient
 from pyRango.models import Collection
+from pyRango.models import Graph
 
 
 class ArangoClient(object):
@@ -27,3 +28,6 @@ class ArangoClient(object):
 
     def get_collection(self, name):
         return Collection(self.http_client, self.database, name)
+
+    def get_graph(self, name):
+        return Graph(self.http_client, self.database, name)

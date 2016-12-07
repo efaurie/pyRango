@@ -42,7 +42,7 @@ class Collection(Writable):
         self.commit_documents()
 
     def create_document(self, data):
-        document = Document(self, data=data)
+        document = Document(self, data)
         self._cached_documents.append(document)
         return document
 

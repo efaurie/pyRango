@@ -18,7 +18,7 @@ class GraphEndpoint(Endpoint):
         return self._post(self.build_uri(), payload=payload)
 
     def get(self, name):
-        return self._get(self.build_uri(name))
+        return self._get(self.build_uri(name))['graph']
 
     def delete(self, name, drop_collections=False):
         return self._delete(self.build_uri(name), payload={'drop_collections': drop_collections})
@@ -61,8 +61,7 @@ class GraphEndpoint(Endpoint):
         return self._delete(self.build_uri(graph_name, collection_name))
 
     def create_vertex(self, graph_name, collection_name, document):
-        payload = {'storeThisObject': document}
-        return self._post(self.build_uri(graph_name,  'vertex', collection_name), payload=payload, transform=False)
+        return self._post(self.build_uri(graph_name,  'vertex', collection_name), payload=document, transform=False)
 
     def get_vertex(self, graph_name, collection_name, vertex_key):
         return self._get(self.build_uri(graph_name,  'vertex', collection_name, vertex_key))
@@ -73,16 +72,14 @@ class GraphEndpoint(Endpoint):
                            transform=False)
 
     def replace_vertex(self, graph_name, collection_name, vertex_key, new_document):
-        payload = {'storeThisJsonObject': new_document}
-        return self._put(self.build_uri(graph_name,  'vertex', collection_name, vertex_key), payload=payload,
+        return self._put(self.build_uri(graph_name,  'vertex', collection_name, vertex_key), payload=new_document,
                          transform=False)
 
     def delete_vertex(self, graph_name, collection_name, vertex_key):
         return self._delete(self.build_uri(graph_name, 'vertex', collection_name, vertex_key))
 
     def create_edge(self, graph_name, collection_name, document):
-        payload = {'storeThisJsonObject': document}
-        return self._post(self.build_uri(graph_name, 'edge', collection_name), payload=payload, transform=False)
+        return self._post(self.build_uri(graph_name, 'edge', collection_name), payload=document, transform=False)
 
     def get_edge(self, graph_name, collection_name, edge_key):
         return self._get(self.build_uri(graph_name, 'edge', collection_name, edge_key))
@@ -93,8 +90,7 @@ class GraphEndpoint(Endpoint):
                            transform=False)
 
     def replace_edge(self, graph_name, collection_name, edge_key, new_document):
-        payload = {'storeThisJsonObject': new_document}
-        return self._put(self.build_uri(graph_name, 'edge', collection_name, edge_key), payload=payload,
+        return self._put(self.build_uri(graph_name, 'edge', collection_name, edge_key), payload=new_document,
                          transform=False)
 
     def delete_edge(self, graph_name, collection_name, edge_key):
